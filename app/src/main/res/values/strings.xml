@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ESP-P2P</string>
+    <string name="no_title">No title</string>
+    <string name="input_title">Input title</string>
+</resources>
