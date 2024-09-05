@@ -9,6 +9,8 @@ class DrawingLocalDataSource @Inject constructor(
 ) {
     suspend fun insertDrawing(drawing: Drawing) = drawingDAO.insert(drawing)
 
+    suspend fun insertAllDrawings(drawings: List<Drawing>) = drawingDAO.insertAll(drawings)
+
     suspend fun updateDrawing(drawing: Drawing) = drawingDAO.update(drawing)
 
     suspend fun deleteDrawing(drawing: Drawing) = drawingDAO.delete(drawing)

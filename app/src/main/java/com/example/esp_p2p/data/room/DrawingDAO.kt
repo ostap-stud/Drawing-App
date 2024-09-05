@@ -3,6 +3,7 @@ package com.example.esp_p2p.data.room
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
@@ -12,6 +13,9 @@ interface DrawingDAO {
 
     @Insert
     suspend fun insert(drawing: Drawing): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(drawings: List<Drawing>)
 
     @Update
     suspend fun update(drawing: Drawing)

@@ -2,8 +2,7 @@ package com.example.esp_p2p
 
 import android.content.Context
 import androidx.room.Room
-import com.example.esp_p2p.data.DrawingLocalDataSource
-import com.example.esp_p2p.data.DrawingRepository
+import com.example.esp_p2p.data.retrofit.DrawingAPI
 import com.example.esp_p2p.data.room.AppDatabase
 import com.example.esp_p2p.data.room.DrawingDAO
 import dagger.Module
@@ -12,6 +11,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.Dispatchers
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Qualifier
 import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
@@ -36,6 +39,21 @@ object ESPModule {
     @Provides
     fun provideDrawingDAO(appDatabase: AppDatabase) : DrawingDAO {
         return appDatabase.drawingDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun provideDrawingAPI() : DrawingAPI {
+        val loggingInterceptor = HttpLoggingInterceptor()
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+
+        val client = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
+
+        return Retrofit.Builder()
+            .baseUrl("http://192.168.0.105/")
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build().create(DrawingAPI::class.java)
     }
 
     /*@Singleton
