@@ -59,7 +59,7 @@ fun SavedDrawingsScreen(
 }
 
 @Composable
-private fun SavedDrawingsItem(
+fun SavedDrawingsItem(
     drawing: Drawing,
     modifier: Modifier = Modifier,
     onDeleteItem: (Drawing) -> Unit,

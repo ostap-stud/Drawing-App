@@ -9,17 +9,17 @@ import com.google.gson.annotations.SerializedName
 data class Drawing(
     @PrimaryKey(autoGenerate = true) val id: Long? = null,
 
-    val title: String,
+    val title: String = "",
 
     @ColumnInfo(name = "field_size")
     @SerializedName("field_size")
-    val fieldSize: Int,
+    val fieldSize: Int = 16,
 
     @ColumnInfo(name = "field_scale")
     @SerializedName("field_scale")
-    val fieldScale: Float,
+    val fieldScale: Float = 50f,
 
     @ColumnInfo(name = "color_array")
     @SerializedName("color_array")
-    val colorArray: List<Int>
+    val colorArray: List<Int> = emptyList()
 )

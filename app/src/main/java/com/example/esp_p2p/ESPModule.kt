@@ -2,13 +2,22 @@ package com.example.esp_p2p
 
 import android.content.Context
 import androidx.room.Room
+import com.example.esp_p2p.auth.CredentialManagerAuth
 import com.example.esp_p2p.data.retrofit.DrawingAPI
+import com.example.esp_p2p.data.retrofit.DynamicHostInterceptor
 import com.example.esp_p2p.data.room.AppDatabase
 import com.example.esp_p2p.data.room.DrawingDAO
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.scopes.ActivityScoped
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
@@ -43,30 +52,33 @@ object ESPModule {
 
     @Singleton
     @Provides
-    fun provideDrawingAPI() : DrawingAPI {
+    fun provideDynamicHostInterceptor() : DynamicHostInterceptor {
+        return DynamicHostInterceptor("esp32.local")
+    }
+
+    @Singleton
+    @Provides
+    fun provideDrawingAPI(hostInterceptor: DynamicHostInterceptor) : DrawingAPI {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
 
-        val client = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
+        val client = OkHttpClient.Builder()
+            .addInterceptor(hostInterceptor)
+            .addInterceptor(loggingInterceptor)
+            .build()
 
         return Retrofit.Builder()
-            .baseUrl("http://192.168.0.105/")
+            .baseUrl("http://${hostInterceptor.hostname}/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build().create(DrawingAPI::class.java)
     }
 
-    /*@Singleton
-    @Provides
-    fun provideDrawingLocalDataSource(drawingDAO: DrawingDAO) : DrawingLocalDataSource {
-        return DrawingLocalDataSource(drawingDAO)
-    }
-
     @Singleton
     @Provides
-    fun provideDrawingRepository(drawingLocalDataSource: DrawingLocalDataSource, @IoDispatcher dispatcher: CoroutineContext) : DrawingRepository {
-        return DrawingRepository(drawingLocalDataSource, dispatcher)
-    }*/
+    fun provideDrawingFirestore(): FirebaseFirestore{
+        return Firebase.firestore
+    }
 
     @Provides
     @IoDispatcher
