@@ -73,7 +73,9 @@ private fun SavedDrawingsItem(
     ) {
         val availableSize = drawing.fieldSize.pxToDp() * (drawing.fieldScale / 2)
         Row(
-            modifier = Modifier.fillMaxWidth().height(availableSize),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(availableSize),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -98,15 +100,24 @@ private fun SavedDrawingsItem(
                     }
                 }
             }
-            Text(
-                text = drawing.title.ifBlank {
-                    stringResource(id = R.string.no_title)
-                },
-                modifier = Modifier.padding(start = 10.dp),
-                style = MaterialTheme.typography.headlineSmall
-            )
             Column(
-                modifier = Modifier.fillMaxHeight().wrapContentWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = drawing.title.ifBlank {
+                        stringResource(id = R.string.no_title)
+                    },
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                Text(
+                    text = "${drawing.fieldSize} x ${drawing.fieldSize}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .wrapContentWidth(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 IconButton(onClick = { onEditItem(drawing.id!!) }) {
