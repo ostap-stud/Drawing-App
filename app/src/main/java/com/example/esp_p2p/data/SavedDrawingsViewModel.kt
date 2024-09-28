@@ -18,12 +18,15 @@ class SavedDrawingsViewModel @Inject constructor(
     private val drawingRepository: DrawingRepository
 ) : ViewModel() {
 
-    val uiState: StateFlow<SavedDrawingsUIState> = runBlocking {
+    /*val uiState: StateFlow<SavedDrawingsUIState> = runBlocking {
         async {
             drawingRepository.getAllDrawings().map { SavedDrawingsUIState(it) }
                 .stateIn(viewModelScope, SharingStarted.Eagerly, SavedDrawingsUIState())
         }.await()
-    }
+    }*/
+    val uiState: StateFlow<SavedDrawingsUIState> =
+        drawingRepository.getAllDrawings().map { SavedDrawingsUIState(it) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, SavedDrawingsUIState())
 
     fun deleteDrawing(drawing: Drawing){
         viewModelScope.launch {

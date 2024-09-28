@@ -2,4 +2,5 @@
     <string name="app_name">ESP-P2P</string>
     <string name="no_title">No title</string>
     <string name="input_title">Input title</string>
+    <string name="firebase_server_client_id">753025841676-heju8s7eunm00efmhp837qssk0a693am.apps.googleusercontent.com</string>
 </resources>

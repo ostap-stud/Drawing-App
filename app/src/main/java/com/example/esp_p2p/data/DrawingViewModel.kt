@@ -1,33 +1,27 @@
 package com.example.esp_p2p.data
 
-import android.util.Log
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.toMutableStateList
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.esp_p2p.R
+import com.example.esp_p2p.data.firestore.DrawingFirestore
 import com.example.esp_p2p.data.room.Drawing
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import kotlin.reflect.KParameter
 
@@ -45,12 +39,24 @@ class DrawingViewModel @Inject constructor(
     var isColorPicking = MutableTransitionState(false)
         private set
 
+    var hasConnectionError = MutableTransitionState(false)
+        private set
+
     var currentTitle by mutableStateOf("")
+        private set
+
+//    var espHostname by mutableStateOf("esp32.local")
+//        private set
+
+    var connectionErrorMessage = ""
         private set
 
     private var drawingId: Long? = null
 
     var isEditing by mutableStateOf(false)
+        private set
+
+    var isSending by mutableStateOf(false)
         private set
 
     /*init {
@@ -61,6 +67,11 @@ class DrawingViewModel @Inject constructor(
         isColorPicking.targetState = !isColorPicking.targetState
     }
 
+    fun onConnectionError(message: String){
+        hasConnectionError.targetState = !hasConnectionError.targetState
+        connectionErrorMessage = message
+    }
+
     fun updateCurrentColor(kParam: KParameter, value: Float){
         currentColor = currentColor::copy.callBy(mapOf(kParam to value))
     }
@@ -68,6 +79,10 @@ class DrawingViewModel @Inject constructor(
     fun updateCurrentTitle(title: String){
         currentTitle = title
     }
+
+//    fun updateEspHostname(hostname: String){
+//        espHostname = hostname
+//    }
 
     fun resetCurrentColor() {
         if(currentColor.toArgb() != _uiState.value.paintColor){
@@ -88,6 +103,10 @@ class DrawingViewModel @Inject constructor(
 
     private fun updateEditingState(){
         isEditing = !isEditing
+    }
+
+    private fun updateSendingState(){
+        isSending = !isSending
     }
 
     fun resetUIState(){
@@ -124,6 +143,22 @@ class DrawingViewModel @Inject constructor(
         }
     }
 
+    fun postDrawing(){
+        updateSendingState()
+        viewModelScope.launch {
+            try {
+                val response = drawingRepository.postDrawing(
+                    espHostname,
+                    _uiState.value.bitmapColors
+                )
+                if (!response.isSuccessful) onConnectionError(response.message())
+            }catch (ex: Exception){
+                onConnectionError(ex.message!!)
+            }
+            updateSendingState()
+        }
+    }
+
     fun applyDrawing(drawingId: Long){
         viewModelScope.launch {
 
@@ -141,18 +176,42 @@ class DrawingViewModel @Inject constructor(
             updateEditingState()
 
             this@DrawingViewModel.drawingId = drawingId
+        }
+    }
 
-            /*for (y in 0 until _uiState.value.fieldSize){
-                for (x in 0 until _uiState.value.fieldSize){
-                    _uiState.value.bitmapColors[x + y * _uiState.value.fieldSize] = drawing.colorArray[x + y * _uiState.value.fieldSize]
-                }
-            }*/
+    fun applyFirestoreDrawing(drawingFsId: String){
+        viewModelScope.launch {
+            val drawing = drawingRepository.getDrawingFirestore(drawingFsId)
+                .get().await().toObject(DrawingFirestore::class.java) ?: DrawingFirestore()
+            _uiState.update { currentState ->
+                currentState.copy(
+                    fieldSize = drawing.fieldSize,
+                    fieldScale = drawing.fieldScale,
+                    bitmapColors = drawing.colorArray.toMutableStateList()
+                )
+            }
+            updateCurrentTitle(drawing.title)
+        }
+    }
 
-            /*for (y in 0 until _uiState.value.fieldSize){
-                for (x in 0 until _uiState.value.fieldSize){
-                    _uiState.value.fieldPoints[Offset(x + 0.5f, y + 0.5f)] = drawing.colorArray[x + y * _uiState.value.fieldSize]
-                }
-            }*/
+    // Publish to Firestore
+    fun sendToFirestore(uid: String){
+        drawingRepository.insertDrawingFirestore(
+            DrawingFirestore(
+                title = currentTitle,
+                uid = uid,
+                fieldSize = _uiState.value.fieldSize,
+                fieldScale = _uiState.value.fieldScale,
+                colorArray = _uiState.value.bitmapColors
+            )
+        )
+    }
+
+    companion object EspHostnameHolder{
+        var espHostname by mutableStateOf("esp32.local")
+
+        fun updateEspHostname(hostname: String){
+            espHostname = hostname
         }
     }
 
