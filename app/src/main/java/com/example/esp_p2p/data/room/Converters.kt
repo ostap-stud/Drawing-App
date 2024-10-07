@@ -10,6 +10,6 @@ object Converters {
 
     @TypeConverter
     fun fromStringToList(colorString: String): List<Int>{
-        return colorString.split(", ").map { it.toInt() }
+        return colorString.split(", ").map { it.ifBlank { "0" }.toInt() }
     }
 }

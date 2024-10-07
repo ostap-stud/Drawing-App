@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class DrawingLocalDataSource @Inject constructor(
     private val drawingDAO: DrawingDAO
-) {
+){
     suspend fun insertDrawing(drawing: Drawing) = drawingDAO.insert(drawing)
 
     suspend fun insertAllDrawings(drawings: List<Drawing>) = drawingDAO.insertAll(drawings)

@@ -36,6 +36,8 @@ import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import com.example.esp_p2p.data.DrawingViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -175,6 +177,7 @@ private fun DrawingScreenMain(
                             .padding(3.dp)
                             .clip(CircleShape)
                             .background(Color(mainUIState.paintColor))
+                            .clearAndSetSemantics { contentDescription = "Color Dialog Button" }
                     )
                 }
                 IconButton(onClick = { onFillClick(mainUIState.paintColor) }) {
@@ -242,6 +245,7 @@ private fun DrawingCard(
     val paintSize = 1f
     Canvas(
         modifier = Modifier
+            .clearAndSetSemantics { contentDescription = "Drawing Canvas" }
             .size(fieldSizeDp)
             .scale(fieldScale)
             .clipToBounds()
