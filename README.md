@@ -43,8 +43,8 @@ Local & Remote drawings, with searching ability:
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/b81a0b17-43e3-40be-b90f-87839565f28d" height="500px"/>
-  <img src="https://github.com/user-attachments/assets/047cc263-b984-45f3-86ff-2a2560568e5f" height="500px"/>
-  <img src="https://github.com/user-attachments/assets/8f3fccac-b70a-4fdf-8ebb-f7ade434eb6c" height="500px"/>
+  <img src="https://github.com/user-attachments/assets/afcb3248-80f1-4a39-b21b-edfa144942c0" height="500px"/>
+  <img src="https://github.com/user-attachments/assets/a39dd7d9-31a4-4fd3-ab07-ad3d9cf49f89" height="500px"/>
 </p>
 
 _Color picking_ and _Network error_ Dialogs:
