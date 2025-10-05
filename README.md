@@ -60,7 +60,6 @@ It looks like this:
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/fa9ef049-1ae5-4006-8b4a-0a20c743ced1" height="500px"/>
-  <img src="https://github.com/user-attachments/assets/4ce9cba7-d260-42ff-a287-abc0fbd4dfff" height="500px"/>
-  <img src="https://github.com/user-attachments/assets/3950d4b8-555b-4f40-9e8f-011396789a97" height="500px"/>
+  <img src="https://github.com/user-attachments/assets/ed4084b3-4cc8-4eeb-9784-bd110b8fb3fa" height="500px"/>
+  <img src="https://github.com/user-attachments/assets/afcb3248-80f1-4a39-b21b-edfa144942c0" height="500px"/>
 </p>
-
